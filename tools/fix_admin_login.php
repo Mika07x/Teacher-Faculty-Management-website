@@ -66,12 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_password'])) {
 
     $update = $conn->prepare("UPDATE users SET password = ? WHERE username = ?");
     $update->bind_param('ss', $hashed, $username);
-    
+
     if ($update->execute()) {
         echo "<p style='color:green;'><strong>✓ Password updated successfully!</strong></p>";
         echo "<p>New password: <code>" . htmlspecialchars($new_password) . "</code></p>";
         echo "<p>Hash: <code>" . htmlspecialchars($hashed) . "</code></p>";
-        
+
         // Test immediately
         echo "<h3>Testing New Password</h3>";
         if (password_verify($new_password, $hashed)) {

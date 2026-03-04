@@ -61,7 +61,7 @@ $res = $stmt->get_result();
             <p class="text-muted">Schedule for subjects you are currently enrolled in</p>
         </div>
     </div>
-    
+
     <div class="card mb-3">
         <div class="card-header bg-success text-white">
             <h5 class="mb-0"><i class="fas fa-calendar-week"></i> Class Schedule</h5>
@@ -84,10 +84,12 @@ $res = $stmt->get_result();
                             <?php while ($row = $res->fetch_assoc()): ?>
                                 <tr>
                                     <td>
-                                        <strong class="text-success"><?php echo htmlspecialchars($row['day_of_week']); ?></strong>
+                                        <strong
+                                            class="text-success"><?php echo htmlspecialchars($row['day_of_week']); ?></strong>
                                     </td>
                                     <td>
-                                        <span class="badge bg-success text-white"><?php echo htmlspecialchars($row['slot_name']); ?></span>
+                                        <span
+                                            class="badge bg-success text-white"><?php echo htmlspecialchars($row['slot_name']); ?></span>
                                     </td>
                                     <td>
                                         <strong><?php echo htmlspecialchars($row['subject_code']); ?></strong><br>
@@ -111,7 +113,8 @@ $res = $stmt->get_result();
                                     <div>
                                         <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
                                         <h5 class="text-muted">No schedule available</h5>
-                                        <p class="text-muted">You haven't enrolled in any subjects yet or no schedules are set for your enrolled subjects.</p>
+                                        <p class="text-muted">You haven't enrolled in any subjects yet or no schedules are
+                                            set for your enrolled subjects.</p>
                                         <a href="subjects.php" class="btn btn-success">
                                             <i class="fas fa-plus"></i> Enroll in Subjects
                                         </a>
@@ -126,7 +129,7 @@ $res = $stmt->get_result();
         <?php if ($res && $res->num_rows > 0): ?>
             <div class="card-footer text-muted">
                 <small>
-                    <i class="fas fa-info-circle"></i> 
+                    <i class="fas fa-info-circle"></i>
                     Showing <?php echo $res->num_rows; ?> scheduled classes for your enrolled subjects.
                     Times are displayed in 24-hour format.
                 </small>

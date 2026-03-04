@@ -160,19 +160,19 @@ $unreadCount = $unreadStmt->get_result()->fetch_assoc()['unread_count'];
         <div class="col-12">
             <?php if ($announcements->num_rows > 0): ?>
                 <?php while ($announcement = $announcements->fetch_assoc()): ?>
-                    <div class="card mb-3 shadow-sm announcement-card <?php echo $announcement['read_status'] ? 'read' : 'unread'; ?>" 
-                         data-read-status="<?php echo $announcement['read_status'] ? 'read' : 'unread'; ?>">
-                        
+                    <div class="card mb-3 shadow-sm announcement-card <?php echo $announcement['read_status'] ? 'read' : 'unread'; ?>"
+                        data-read-status="<?php echo $announcement['read_status'] ? 'read' : 'unread'; ?>">
+
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <!-- Priority Badge -->
-                                <span class="badge me-2 <?php 
-                                    echo match($announcement['priority']) {
-                                        'urgent' => 'bg-danger',
-                                        'high' => 'bg-warning text-dark',
-                                        'normal' => 'bg-success',
-                                        'low' => 'bg-secondary'
-                                    };
+                                <span class="badge me-2 <?php
+                                echo match ($announcement['priority']) {
+                                    'urgent' => 'bg-danger',
+                                    'high' => 'bg-warning text-dark',
+                                    'normal' => 'bg-success',
+                                    'low' => 'bg-secondary'
+                                };
                                 ?>">
                                     <?php echo ucfirst($announcement['priority']); ?>
                                 </span>
@@ -190,12 +190,14 @@ $unreadCount = $unreadStmt->get_result()->fetch_assoc()['unread_count'];
                             <?php if (!$announcement['read_status']): ?>
                                 <form method="post" class="d-inline">
                                     <input type="hidden" name="announcement_id" value="<?php echo $announcement['id']; ?>">
-                                    <button type="submit" name="mark_read" class="btn btn-sm btn-outline-success" title="Mark as read">
+                                    <button type="submit" name="mark_read" class="btn btn-sm btn-outline-success"
+                                        title="Mark as read">
                                         <i class="fas fa-check"></i>
                                     </button>
                                 </form>
                             <?php else: ?>
-                                <span class="text-success" title="Read on <?php echo date('M d, Y g:i A', strtotime($announcement['read_status'])); ?>">
+                                <span class="text-success"
+                                    title="Read on <?php echo date('M d, Y g:i A', strtotime($announcement['read_status'])); ?>">
                                     <i class="fas fa-check-circle"></i>
                                 </span>
                             <?php endif; ?>
@@ -205,24 +207,26 @@ $unreadCount = $unreadStmt->get_result()->fetch_assoc()['unread_count'];
                             <!-- Teacher and Subject Info -->
                             <div class="mb-3">
                                 <small class="text-muted">
-                                    <i class="fas fa-user"></i> From: <strong><?php echo htmlspecialchars($announcement['teacher_name']); ?></strong>
-                                    
+                                    <i class="fas fa-user"></i> From:
+                                    <strong><?php echo htmlspecialchars($announcement['teacher_name']); ?></strong>
+
                                     <?php if ($announcement['subject_code']): ?>
                                         <span class="ms-3">
-                                            <i class="fas fa-book"></i> Subject: 
+                                            <i class="fas fa-book"></i> Subject:
                                             <span class="badge bg-light text-dark">
                                                 <?php echo htmlspecialchars($announcement['subject_code'] . ' - ' . $announcement['subject_name']); ?>
                                             </span>
                                         </span>
                                     <?php else: ?>
                                         <span class="ms-3">
-                                            <i class="fas fa-globe"></i> 
+                                            <i class="fas fa-globe"></i>
                                             <span class="badge bg-light text-dark">General Announcement</span>
                                         </span>
                                     <?php endif; ?>
-                                    
+
                                     <span class="ms-3">
-                                        <i class="fas fa-clock"></i> <?php echo date('M d, Y g:i A', strtotime($announcement['publish_date'])); ?>
+                                        <i class="fas fa-clock"></i>
+                                        <?php echo date('M d, Y g:i A', strtotime($announcement['publish_date'])); ?>
                                     </span>
                                 </small>
                             </div>
@@ -239,7 +243,8 @@ $unreadCount = $unreadStmt->get_result()->fetch_assoc()['unread_count'];
                     <div class="card-body text-center py-5">
                         <i class="fas fa-bullhorn fa-3x text-muted mb-3"></i>
                         <h5 class="text-muted">No Announcements</h5>
-                        <p class="text-muted">You don't have any announcements at the moment. Check back later for updates from your professors.</p>
+                        <p class="text-muted">You don't have any announcements at the moment. Check back later for updates
+                            from your professors.</p>
                     </div>
                 </div>
             <?php endif; ?>
@@ -248,65 +253,65 @@ $unreadCount = $unreadStmt->get_result()->fetch_assoc()['unread_count'];
 </div>
 
 <style>
-.announcement-card.unread {
-    border-left: 4px solid #1b5e20;
-}
+    .announcement-card.unread {
+        border-left: 4px solid #1b5e20;
+    }
 
-.announcement-card.read {
-    opacity: 0.8;
-}
+    .announcement-card.read {
+        opacity: 0.8;
+    }
 
-.announcement-message {
-    line-height: 1.6;
-    font-size: 1rem;
-}
+    .announcement-message {
+        line-height: 1.6;
+        font-size: 1rem;
+    }
 
-.btn-group .btn.active {
-    background-color: #1b5e20;
-    border-color: #1b5e20;
-    color: white;
-}
+    .btn-group .btn.active {
+        background-color: #1b5e20;
+        border-color: #1b5e20;
+        color: white;
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('[data-filter]');
-    const announcementCards = document.querySelectorAll('.announcement-card');
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterButtons = document.querySelectorAll('[data-filter]');
+        const announcementCards = document.querySelectorAll('.announcement-card');
 
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            // Add active class to clicked button
-            this.classList.add('active');
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
 
-            const filter = this.getAttribute('data-filter');
+                const filter = this.getAttribute('data-filter');
 
-            announcementCards.forEach(card => {
-                const readStatus = card.getAttribute('data-read-status');
-                
-                if (filter === 'all') {
-                    card.style.display = 'block';
-                } else if (filter === 'unread' && readStatus === 'unread') {
-                    card.style.display = 'block';
-                } else if (filter === 'read' && readStatus === 'read') {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                announcementCards.forEach(card => {
+                    const readStatus = card.getAttribute('data-read-status');
+
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else if (filter === 'unread' && readStatus === 'unread') {
+                        card.style.display = 'block';
+                    } else if (filter === 'read' && readStatus === 'read') {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Auto-refresh page when marking as read to update UI
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function () {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
             });
         });
     });
-
-    // Auto-refresh page when marking as read to update UI
-    document.querySelectorAll('form').forEach(form => {
-        form.addEventListener('submit', function() {
-            setTimeout(() => {
-                window.location.reload();
-            }, 500);
-        });
-    });
-});
 </script>
 
 <?php require_once __DIR__ . '/../admin/footer.php'; ?>

@@ -1,7 +1,10 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '\config\SessionManager.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\config\Database.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\classes\Teacher.php';
+require_once __DIR__ . '/../config/SessionManager.php';
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../classes/Teacher.php';
+require_once __DIR__ . '/../classes/Subject.php';
+require_once __DIR__ . '/../classes/Classroom.php';
+require_once __DIR__ . '/../classes/Schedule.php';
 
 SessionManager::startTeacherSession();
 if (!SessionManager::isLoggedIn() || !SessionManager::isTeacher()) {
@@ -53,15 +56,6 @@ $teacherObj = new Teacher($conn);
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="schedule.php">My Schedule</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="current.php">Current Assignment</a>
-                    </li>
                     <li class="nav-item">
                         <span class="nav-link">Welcome,
                             <?php echo htmlspecialchars(SessionManager::getUsername()); ?></span>
@@ -151,7 +145,8 @@ $teacherObj = new Teacher($conn);
                                                                 <strong><?php echo htmlspecialchars($class['subject_code'] ?? 'N/A'); ?></strong>
                                                             </div>
                                                             <div class="subject-name">
-                                                                <?php echo htmlspecialchars($class['subject_name']); ?></div>
+                                                                <?php echo htmlspecialchars($class['subject_name']); ?>
+                                                            </div>
                                                             <div class="room-info">
                                                                 <small><i class="fas fa-map-marker-alt"></i>
                                                                     <?php echo htmlspecialchars($class['room_number']); ?></small>

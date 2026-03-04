@@ -88,6 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -96,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
 </head>
+
 <body>
     <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
 
@@ -113,7 +115,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link active" href="profile.php">Profile</a></li>
                     <li class="nav-item">
-                        <span class="nav-link">Welcome, <?php echo htmlspecialchars(SessionManager::getUsername()); ?></span>
+                        <span class="nav-link">Welcome,
+                            <?php echo htmlspecialchars(SessionManager::getUsername()); ?></span>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">
@@ -145,7 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="mb-3">
                                     <label class="form-label">Profile Image</label>
                                     <div class="mb-2">
-                                        <img src="<?php echo htmlspecialchars('../assets/uploads/' . ($user['profile_image'] ?: 'default.png')); ?>" alt="Profile" style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+                                        <img src="<?php echo htmlspecialchars('../assets/uploads/' . ($user['profile_image'] ?: 'default.png')); ?>"
+                                            alt="Profile"
+                                            style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
                                     </div>
                                     <input type="file" name="profile_image" class="form-control" accept="image/*">
                                     <small class="text-muted">Accepted formats: JPG, PNG, GIF (Max 5MB)</small>
@@ -154,13 +159,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <!-- Email -->
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
-                                    <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                                    <input type="email" name="email" class="form-control"
+                                        value="<?php echo htmlspecialchars($user['email']); ?>" required>
                                 </div>
 
                                 <!-- Username (read-only) -->
                                 <div class="mb-3">
                                     <label class="form-label">Username</label>
-                                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
+                                    <input type="text" class="form-control"
+                                        value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
                                 </div>
 
                                 <!-- Password -->
@@ -181,4 +188,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

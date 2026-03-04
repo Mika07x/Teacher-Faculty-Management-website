@@ -27,13 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $current_password = $_POST['current_password'] ?? '';
     $new_password = $_POST['new_password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
-    
+
     // Handle file upload
     $profile_image = null;
     if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
         $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
         $max_size = 5 * 1024 * 1024; // 5MB
-        
+
         if (!in_array($_FILES['profile_image']['type'], $allowed_types)) {
             $error_message = 'Please upload a valid image file (JPEG, PNG, or GIF).';
         } elseif ($_FILES['profile_image']['size'] > $max_size) {
@@ -43,18 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             if (!file_exists($upload_dir)) {
                 mkdir($upload_dir, 0755, true);
             }
-            
+
             $file_extension = pathinfo($_FILES['profile_image']['name'], PATHINFO_EXTENSION);
             $profile_image = 'profile_' . $user_id . '_' . time() . '.' . $file_extension;
             $upload_path = $upload_dir . $profile_image;
-            
+
             if (!move_uploaded_file($_FILES['profile_image']['tmp_name'], $upload_path)) {
                 $error_message = 'Failed to upload image. Please try again.';
                 $profile_image = null;
             }
         }
     }
-    
+
     // Validation
     if (empty($error_message)) {
         if (empty($username) || empty($email)) {
@@ -73,19 +73,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $user_data = $result->fetch_assoc();
-                
+
                 if (!password_verify($current_password, $user_data['password'])) {
                     $error_message = 'Current password is incorrect.';
                 }
             }
-            
+
             if (empty($error_message)) {
                 // Check if username/email already exists for other users
                 $stmt = $conn->prepare('SELECT id FROM users WHERE (username = ? OR email = ?) AND id != ?');
                 $stmt->bind_param('ssi', $username, $email, $user_id);
                 $stmt->execute();
                 $result = $stmt->get_result();
-                
+
                 if ($result->num_rows > 0) {
                     $error_message = 'Username or email already exists.';
                 } else {
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                         $stmt = $conn->prepare('UPDATE users SET username = ?, email = ?, updated_at = NOW() WHERE id = ?');
                         $stmt->bind_param('ssi', $username, $email, $user_id);
                     }
-                    
+
                     if ($stmt->execute()) {
                         // Update session with new username
                         $_SESSION['username'] = $username;
@@ -147,7 +147,7 @@ if (!empty($user['profile_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
-    
+
     <?php if ($error_message): ?>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <i class="fas fa-exclamation-triangle"></i> <?php echo htmlspecialchars($error_message); ?>
@@ -159,7 +159,8 @@ if (!empty($user['profile_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body text-center">
-                    <img src="<?php echo htmlspecialchars($profile_image_url); ?>" class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
+                    <img src="<?php echo htmlspecialchars($profile_image_url); ?>" class="rounded-circle mb-3"
+                        width="120" height="120" style="object-fit: cover;">
                     <h5><?php echo htmlspecialchars($user['username']); ?></h5>
                     <p class="text-muted"><?php echo htmlspecialchars($user['email']); ?></p>
                     <span class="badge bg-success text-white">
@@ -186,8 +187,8 @@ if (!empty($user['profile_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/
                         <div class="col-md-6">
                             <strong>Status:</strong>
                             <p><span class="badge bg-success text-white">
-                                <?php echo ucfirst($user['status']); ?>
-                            </span></p>
+                                    <?php echo ucfirst($user['status']); ?>
+                                </span></p>
                         </div>
                         <div class="col-md-6">
                             <strong>Member Since:</strong>
@@ -198,7 +199,7 @@ if (!empty($user['profile_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/
             </div>
         </div>
     </div>
-    
+
     <!-- Profile Update Form - Centered and Full Width -->
     <div class="row justify-content-center mt-4">
         <div class="col-lg-10 col-xl-8">
@@ -209,73 +210,82 @@ if (!empty($user['profile_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data" id="profileForm">
                         <input type="hidden" name="update_profile" value="1">
-                        
+
                         <!-- Profile Image Upload -->
                         <div class="row mb-4">
                             <div class="col-12 text-center">
                                 <div class="mb-3">
-                                    <label class="form-label"><strong><i class="fas fa-camera"></i> Profile Picture</strong></label>
+                                    <label class="form-label"><strong><i class="fas fa-camera"></i> Profile
+                                            Picture</strong></label>
                                     <div class="d-flex flex-column align-items-center">
-                                        <img id="imagePreview" src="<?php echo htmlspecialchars($profile_image_url); ?>" 
-                                             class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;">
+                                        <img id="imagePreview" src="<?php echo htmlspecialchars($profile_image_url); ?>"
+                                            class="rounded-circle mb-3" width="100" height="100"
+                                            style="object-fit: cover;">
                                         <div class="mb-2">
-                                            <input type="file" class="form-control" id="profile_image" name="profile_image" 
-                                                   accept="image/*" style="display: none;">
-                                            <button type="button" class="btn btn-outline-success btn-sm" onclick="document.getElementById('profile_image').click();">
+                                            <input type="file" class="form-control" id="profile_image"
+                                                name="profile_image" accept="image/*" style="display: none;">
+                                            <button type="button" class="btn btn-outline-success btn-sm"
+                                                onclick="document.getElementById('profile_image').click();">
                                                 <i class="fas fa-upload"></i> Choose New Picture
                                             </button>
                                         </div>
-                                        <small class="text-muted">Maximum file size: 5MB. Supported formats: JPEG, PNG, GIF</small>
+                                        <small class="text-muted">Maximum file size: 5MB. Supported formats: JPEG, PNG,
+                                            GIF</small>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <hr>
-                        
+
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="username" class="form-label">Username <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="username" name="username" 
-                                           value="<?php echo htmlspecialchars($user['username']); ?>" required>
+                                    <label for="username" class="form-label">Username <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                        value="<?php echo htmlspecialchars($user['username']); ?>" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" id="email" name="email" 
-                                           value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                                    <label for="email" class="form-label">Email Address <span
+                                            class="text-danger">*</span></label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        value="<?php echo htmlspecialchars($user['email']); ?>" required>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <hr>
                         <h6 class="mb-3"><i class="fas fa-lock"></i> Change Password (Optional)</h6>
-                        
+
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="current_password" class="form-label">Current Password</label>
-                                    <input type="password" class="form-control" id="current_password" name="current_password">
+                                    <input type="password" class="form-control" id="current_password"
+                                        name="current_password">
                                     <small class="text-muted">Required only if changing password</small>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="new_password" class="form-label">New Password</label>
-                                    <input type="password" class="form-control" id="new_password" name="new_password" minlength="6">
+                                    <input type="password" class="form-control" id="new_password" name="new_password"
+                                        minlength="6">
                                     <small class="text-muted">Minimum 6 characters</small>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="confirm_password" class="form-label">Confirm New Password</label>
-                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" minlength="6">
+                                    <input type="password" class="form-control" id="confirm_password"
+                                        name="confirm_password" minlength="6">
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="d-flex justify-content-between align-items-center">
                             <button type="submit" class="btn btn-success btn-lg">
                                 <i class="fas fa-save"></i> Update Profile
@@ -294,77 +304,77 @@ if (!empty($user['profile_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/
 <?php require_once __DIR__ . '/../admin/footer.php'; ?>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const newPassword = document.getElementById('new_password');
-    const confirmPassword = document.getElementById('confirm_password');
-    const currentPassword = document.getElementById('current_password');
-    const form = document.getElementById('profileForm');
-    const profileImageInput = document.getElementById('profile_image');
-    const imagePreview = document.getElementById('imagePreview');
-    
-    // Profile image preview
-    profileImageInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            // Check file size (5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB');
-                this.value = '';
-                return;
+    document.addEventListener('DOMContentLoaded', function () {
+        const newPassword = document.getElementById('new_password');
+        const confirmPassword = document.getElementById('confirm_password');
+        const currentPassword = document.getElementById('current_password');
+        const form = document.getElementById('profileForm');
+        const profileImageInput = document.getElementById('profile_image');
+        const imagePreview = document.getElementById('imagePreview');
+
+        // Profile image preview
+        profileImageInput.addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Check file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    this.value = '';
+                    return;
+                }
+
+                // Check file type
+                if (!file.type.match('image.*')) {
+                    alert('Please select a valid image file');
+                    this.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
             }
-            
-            // Check file type
-            if (!file.type.match('image.*')) {
-                alert('Please select a valid image file');
-                this.value = '';
-                return;
+        });
+
+        // Password validation
+        function validatePasswords() {
+            if (newPassword.value && newPassword.value !== confirmPassword.value) {
+                confirmPassword.setCustomValidity('Passwords do not match');
+            } else {
+                confirmPassword.setCustomValidity('');
             }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
         }
+
+        newPassword.addEventListener('input', validatePasswords);
+        confirmPassword.addEventListener('input', validatePasswords);
+
+        // Require current password when setting new password
+        newPassword.addEventListener('input', function () {
+            if (this.value) {
+                currentPassword.required = true;
+            } else {
+                currentPassword.required = false;
+                confirmPassword.value = '';
+            }
+        });
+
+        // Form submission validation
+        form.addEventListener('submit', function (e) {
+            if (newPassword.value && !currentPassword.value) {
+                e.preventDefault();
+                alert('Please enter your current password to change your password.');
+                currentPassword.focus();
+                return false;
+            }
+
+            if (newPassword.value && newPassword.value !== confirmPassword.value) {
+                e.preventDefault();
+                alert('New password and confirmation do not match.');
+                confirmPassword.focus();
+                return false;
+            }
+        });
     });
-    
-    // Password validation
-    function validatePasswords() {
-        if (newPassword.value && newPassword.value !== confirmPassword.value) {
-            confirmPassword.setCustomValidity('Passwords do not match');
-        } else {
-            confirmPassword.setCustomValidity('');
-        }
-    }
-    
-    newPassword.addEventListener('input', validatePasswords);
-    confirmPassword.addEventListener('input', validatePasswords);
-    
-    // Require current password when setting new password
-    newPassword.addEventListener('input', function() {
-        if (this.value) {
-            currentPassword.required = true;
-        } else {
-            currentPassword.required = false;
-            confirmPassword.value = '';
-        }
-    });
-    
-    // Form submission validation
-    form.addEventListener('submit', function(e) {
-        if (newPassword.value && !currentPassword.value) {
-            e.preventDefault();
-            alert('Please enter your current password to change your password.');
-            currentPassword.focus();
-            return false;
-        }
-        
-        if (newPassword.value && newPassword.value !== confirmPassword.value) {
-            e.preventDefault();
-            alert('New password and confirmation do not match.');
-            confirmPassword.focus();
-            return false;
-        }
-    });
-});
 </script>

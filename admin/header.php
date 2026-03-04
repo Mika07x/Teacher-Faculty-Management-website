@@ -6,6 +6,7 @@ SessionManager::requireAdmin();
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@ SessionManager::requireAdmin();
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -27,7 +29,8 @@ SessionManager::requireAdmin();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <span class="nav-link">Welcome, <?php echo htmlspecialchars(SessionManager::getUsername()); ?></span>
+                        <span class="nav-link">Welcome,
+                            <?php echo htmlspecialchars(SessionManager::getUsername()); ?></span>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">

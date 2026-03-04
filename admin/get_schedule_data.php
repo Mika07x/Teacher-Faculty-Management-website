@@ -8,24 +8,24 @@ if (!isset($_GET['schedule_id'])) {
     exit;
 }
 
-$schedule_id = (int)$_GET['schedule_id'];
+$schedule_id = (int) $_GET['schedule_id'];
 
 try {
     $db = new Database();
     $conn = $db->connect();
-    
+
     $query = "SELECT s.*, sub.subject_name, c.room_number, c.room_name, ts.slot_name, ts.start_time, ts.end_time
               FROM schedules s
               JOIN subjects sub ON s.subject_id = sub.id
               JOIN classrooms c ON s.classroom_id = c.id
               JOIN time_slots ts ON s.time_slot_id = ts.id
               WHERE s.id = ?";
-    
+
     $stmt = $conn->prepare($query);
     $stmt->bind_param('i', $schedule_id);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows > 0) {
         $scheduleData = $result->fetch_assoc();
         echo json_encode([
@@ -45,10 +45,10 @@ try {
     } else {
         echo json_encode(['success' => false, 'error' => 'Schedule not found']);
     }
-    
+
     $stmt->close();
     $conn->close();
-    
+
 } catch (Exception $e) {
     echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
 }

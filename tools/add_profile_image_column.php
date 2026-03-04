@@ -16,9 +16,9 @@ if ($result && $result->num_rows > 0) {
     echo "<p style='color:green;'><strong>✓ Column 'profile_image' already exists.</strong></p>";
 } else {
     echo "<p>Adding 'profile_image' column to users table...</p>";
-    
+
     $alter = "ALTER TABLE users ADD COLUMN profile_image VARCHAR(255) DEFAULT NULL AFTER password";
-    
+
     if ($conn->query($alter) === TRUE) {
         echo "<p style='color:green;'><strong>✓ Column added successfully!</strong></p>";
     } else {

@@ -1,7 +1,7 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '\config\SessionManager.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\config\Database.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\classes\Teacher.php';
+require_once __DIR__ . '/../config/SessionManager.php';
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../classes/Teacher.php';
 
 SessionManager::startTeacherSession();
 if (!SessionManager::isLoggedIn() || !SessionManager::isTeacher()) {
@@ -96,7 +96,8 @@ $currentAssignment = $userTeacherId ? $teacherObj->getCurrentAssignment($userTea
                             <div class="stat-card">
                                 <div class="stat-icon">📚</div>
                                 <div class="stat-number">
-                                    <?php echo htmlspecialchars(substr($currentAssignment['subject_name'], 0, 20)); ?></div>
+                                    <?php echo htmlspecialchars(substr($currentAssignment['subject_name'], 0, 20)); ?>
+                                </div>
                                 <div class="stat-label">Subject</div>
                             </div>
                         </div>

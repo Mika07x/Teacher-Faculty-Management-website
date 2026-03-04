@@ -1,10 +1,10 @@
 <?php
 // REUSE EXISTING SYSTEM PATTERNS - consistent with admin/teacher modules
-require_once $_SERVER['DOCUMENT_ROOT'] . '\\Teacher Faculty Management website\config\SessionManager.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\\Teacher Faculty Management website\config\Database.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\\Teacher Faculty Management website\classes\Teacher.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\\Teacher Faculty Management website\classes\Subject.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\\Teacher Faculty Management website\includes\functions.php';
+require_once __DIR__ . '/../config/SessionManager.php';
+require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/../classes/Teacher.php';
+require_once __DIR__ . '/../classes/Subject.php';
+require_once __DIR__ . '/../includes/functions.php';
 
 SessionManager::requireTeacher();
 
@@ -54,11 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $teacher_id) {
     $subject_id = !empty($_POST['subject_id']) ? $_POST['subject_id'] : NULL;
     $target_audience = $_POST['target_audience'] ?? 'subject_students';
     $priority = $_POST['priority'] ?? 'normal';
-    
+
     if (!empty($title) && !empty($message)) {
         $stmt = $conn->prepare("INSERT INTO announcements (title, message, teacher_id, subject_id, target_audience, priority) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->bind_param('ssiiss', $title, $message, $teacher_id, $subject_id, $target_audience, $priority);
-        
+
         if ($stmt->execute()) {
             $message = 'Announcement sent successfully!';
         } else {
@@ -84,6 +84,7 @@ $teacherSubjects = $subjectsStmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,6 +93,7 @@ $teacherSubjects = $subjectsStmt->get_result();
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -105,7 +107,8 @@ $teacherSubjects = $subjectsStmt->get_result();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <span class="nav-link">Welcome, <?php echo htmlspecialchars(SessionManager::getUsername()); ?></span>
+                        <span class="nav-link">Welcome,
+                            <?php echo htmlspecialchars(SessionManager::getUsername()); ?></span>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">
@@ -119,206 +122,211 @@ $teacherSubjects = $subjectsStmt->get_result();
 
     <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
 
-    <div class="main-content" style="margin-left: 280px; margin-top: 70px; padding: 30px; min-height: calc(100vh - 70px);">
+    <div class="main-content"
+        style="margin-left: 280px; margin-top: 70px; padding: 30px; min-height: calc(100vh - 70px);">
 
-<div class="container-fluid">
-    <!-- Back Button and Title -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <a href="dashboard.php" class="btn btn-outline-primary mb-2">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
-            <h3><i class="fas fa-bullhorn"></i> Send Announcements</h3>
-            <p class="text-muted">Send announcements to students enrolled in your subjects</p>
-        </div>
-    </div>
-
-    <?php if ($message): ?>
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($error): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-triangle"></i> <?php echo htmlspecialchars($error); ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($teacher_id): ?>
-    <div class="row">
-        <div class="col-lg-8">
-            <!-- Announcement Form -->
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="card-title mb-0"><i class="fas fa-edit"></i> Create New Announcement</h5>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        <div class="mb-3">
-                            <label for="title" class="form-label">Announcement Title *</label>
-                            <input type="text" class="form-control" id="title" name="title" required maxlength="255">
-                        </div>
-
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label for="target_audience" class="form-label">Target Audience *</label>
-                                <select class="form-select" id="target_audience" name="target_audience" required>
-                                    <option value="subject_students">Students of Selected Subject</option>
-                                    <option value="all_students">All Students</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="priority" class="form-label">Priority</label>
-                                <select class="form-select" id="priority" name="priority">
-                                    <option value="low">Low</option>
-                                    <option value="normal" selected>Normal</option>
-                                    <option value="high">High</option>
-                                    <option value="urgent">Urgent</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="mb-3" id="subject-selection">
-                            <label for="subject_id" class="form-label">Select Subject *</label>
-                            <select class="form-select" id="subject_id" name="subject_id">
-                                <option value="">Select a subject...</option>
-                                <?php while ($subject = $teacherSubjects->fetch_assoc()): ?>
-                                    <option value="<?php echo $subject['id']; ?>">
-                                        <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['subject_name']); ?>
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="message" class="form-label">Announcement Message *</label>
-                            <textarea class="form-control" id="message" name="message" rows="6" required 
-                                      placeholder="Type your announcement message here..."></textarea>
-                            <div class="form-text">Write a clear and detailed message for students.</div>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-outline-secondary" onclick="document.querySelector('form').reset()">
-                                <i class="fas fa-undo"></i> Clear Form
-                            </button>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i> Send Announcement
-                            </button>
-                        </div>
-                    </form>
+        <div class="container-fluid">
+            <!-- Back Button and Title -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <a href="dashboard.php" class="btn btn-outline-primary mb-2">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                    <h3><i class="fas fa-bullhorn"></i> Send Announcements</h3>
+                    <p class="text-muted">Send announcements to students enrolled in your subjects</p>
                 </div>
             </div>
-        </div>
 
-        <div class="col-lg-4">
-            <!-- Guidelines Card -->
-            <div class="card shadow-sm mb-3">
-                <div class="card-header">
-                    <h6 class="card-title mb-0"><i class="fas fa-info-circle"></i> Guidelines</h6>
+            <?php if ($message): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($message); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-                <div class="card-body">
-                    <div class="alert alert-light small mb-0">
-                        <h6>Priority Levels:</h6>
-                        <ul class="mb-2">
-                            <li><strong>Low:</strong> General information</li>
-                            <li><strong>Normal:</strong> Regular updates</li>
-                            <li><strong>High:</strong> Important notices</li>
-                            <li><strong>Urgent:</strong> Time-sensitive alerts</li>
-                        </ul>
-                        
-                        <h6>Best Practices:</h6>
-                        <ul class="mb-0">
-                            <li>Use clear, descriptive titles</li>
-                            <li>Keep messages concise but informative</li>
-                            <li>Choose appropriate priority levels</li>
-                            <li>Proofread before sending</li>
-                        </ul>
+            <?php endif; ?>
+
+            <?php if ($error): ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> <?php echo htmlspecialchars($error); ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($teacher_id): ?>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Announcement Form -->
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-edit"></i> Create New Announcement</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    <div class="mb-3">
+                                        <label for="title" class="form-label">Announcement Title *</label>
+                                        <input type="text" class="form-control" id="title" name="title" required
+                                            maxlength="255">
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="target_audience" class="form-label">Target Audience *</label>
+                                            <select class="form-select" id="target_audience" name="target_audience"
+                                                required>
+                                                <option value="subject_students">Students of Selected Subject</option>
+                                                <option value="all_students">All Students</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="priority" class="form-label">Priority</label>
+                                            <select class="form-select" id="priority" name="priority">
+                                                <option value="low">Low</option>
+                                                <option value="normal" selected>Normal</option>
+                                                <option value="high">High</option>
+                                                <option value="urgent">Urgent</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3" id="subject-selection">
+                                        <label for="subject_id" class="form-label">Select Subject *</label>
+                                        <select class="form-select" id="subject_id" name="subject_id">
+                                            <option value="">Select a subject...</option>
+                                            <?php while ($subject = $teacherSubjects->fetch_assoc()): ?>
+                                                <option value="<?php echo $subject['id']; ?>">
+                                                    <?php echo htmlspecialchars($subject['subject_code'] . ' - ' . $subject['subject_name']); ?>
+                                                </option>
+                                            <?php endwhile; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="message" class="form-label">Announcement Message *</label>
+                                        <textarea class="form-control" id="message" name="message" rows="6" required
+                                            placeholder="Type your announcement message here..."></textarea>
+                                        <div class="form-text">Write a clear and detailed message for students.</div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            onclick="document.querySelector('form').reset()">
+                                            <i class="fas fa-undo"></i> Clear Form
+                                        </button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-paper-plane"></i> Send Announcement
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Recent Announcements -->
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <h6 class="card-title mb-0"><i class="fas fa-history"></i> Recent Announcements</h6>
-                </div>
-                <div class="card-body">
-                    <?php
-                    $recentQuery = "SELECT a.title, a.created_at, a.priority, s.subject_code 
+                    <div class="col-lg-4">
+                        <!-- Guidelines Card -->
+                        <div class="card shadow-sm mb-3">
+                            <div class="card-header">
+                                <h6 class="card-title mb-0"><i class="fas fa-info-circle"></i> Guidelines</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert alert-light small mb-0">
+                                    <h6>Priority Levels:</h6>
+                                    <ul class="mb-2">
+                                        <li><strong>Low:</strong> General information</li>
+                                        <li><strong>Normal:</strong> Regular updates</li>
+                                        <li><strong>High:</strong> Important notices</li>
+                                        <li><strong>Urgent:</strong> Time-sensitive alerts</li>
+                                    </ul>
+
+                                    <h6>Best Practices:</h6>
+                                    <ul class="mb-0">
+                                        <li>Use clear, descriptive titles</li>
+                                        <li>Keep messages concise but informative</li>
+                                        <li>Choose appropriate priority levels</li>
+                                        <li>Proofread before sending</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Announcements -->
+                        <div class="card shadow-sm">
+                            <div class="card-header">
+                                <h6 class="card-title mb-0"><i class="fas fa-history"></i> Recent Announcements</h6>
+                            </div>
+                            <div class="card-body">
+                                <?php
+                                $recentQuery = "SELECT a.title, a.created_at, a.priority, s.subject_code 
                                    FROM announcements a 
                                    LEFT JOIN subjects s ON a.subject_id = s.id 
                                    WHERE a.teacher_id = ? 
                                    ORDER BY a.created_at DESC 
                                    LIMIT 5";
-                    $recentStmt = $conn->prepare($recentQuery);
-                    $recentStmt->bind_param('i', $teacher_id);
-                    $recentStmt->execute();
-                    $recent = $recentStmt->get_result();
-                    ?>
-                    
-                    <?php if ($recent->num_rows > 0): ?>
-                        <div class="list-group list-group-flush">
-                            <?php while ($announcement = $recent->fetch_assoc()): ?>
-                                <div class="list-group-item border-0 px-0 py-2">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <h6 class="mb-1 small"><?php echo htmlspecialchars($announcement['title']); ?></h6>
-                                            <small class="text-muted">
-                                                <?php if ($announcement['subject_code']): ?>
-                                                    <?php echo htmlspecialchars($announcement['subject_code']); ?>
-                                                <?php else: ?>
-                                                    All Students
-                                                <?php endif; ?>
-                                                • <?php echo date('M d', strtotime($announcement['created_at'])); ?>
-                                            </small>
-                                        </div>
-                                        <span class="badge bg-<?php 
-                                            echo match($announcement['priority']) {
-                                                'urgent' => 'danger',
-                                                'high' => 'warning',
-                                                'normal' => 'primary',
-                                                'low' => 'secondary'
-                                            };
-                                        ?> small">
-                                            <?php echo ucfirst($announcement['priority']); ?>
-                                        </span>
+                                $recentStmt = $conn->prepare($recentQuery);
+                                $recentStmt->bind_param('i', $teacher_id);
+                                $recentStmt->execute();
+                                $recent = $recentStmt->get_result();
+                                ?>
+
+                                <?php if ($recent->num_rows > 0): ?>
+                                    <div class="list-group list-group-flush">
+                                        <?php while ($announcement = $recent->fetch_assoc()): ?>
+                                            <div class="list-group-item border-0 px-0 py-2">
+                                                <div class="d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <h6 class="mb-1 small">
+                                                            <?php echo htmlspecialchars($announcement['title']); ?></h6>
+                                                        <small class="text-muted">
+                                                            <?php if ($announcement['subject_code']): ?>
+                                                                <?php echo htmlspecialchars($announcement['subject_code']); ?>
+                                                            <?php else: ?>
+                                                                All Students
+                                                            <?php endif; ?>
+                                                            • <?php echo date('M d', strtotime($announcement['created_at'])); ?>
+                                                        </small>
+                                                    </div>
+                                                    <span class="badge bg-<?php
+                                                    echo match ($announcement['priority']) {
+                                                        'urgent' => 'danger',
+                                                        'high' => 'warning',
+                                                        'normal' => 'primary',
+                                                        'low' => 'secondary'
+                                                    };
+                                                    ?> small">
+                                                        <?php echo ucfirst($announcement['priority']); ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        <?php endwhile; ?>
                                     </div>
-                                </div>
-                            <?php endwhile; ?>
+                                <?php else: ?>
+                                    <p class="text-muted small mb-0">No announcements sent yet.</p>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                    <?php else: ?>
-                        <p class="text-muted small mb-0">No announcements sent yet.</p>
-                    <?php endif; ?>
+                    </div>
                 </div>
-            </div>
+            <?php endif; ?>
         </div>
-    </div>
-    <?php endif; ?>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const targetAudience = document.getElementById('target_audience');
-    const subjectSelection = document.getElementById('subject-selection');
-    const subjectSelect = document.getElementById('subject_id');
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const targetAudience = document.getElementById('target_audience');
+                const subjectSelection = document.getElementById('subject-selection');
+                const subjectSelect = document.getElementById('subject_id');
 
-    function toggleSubjectSelection() {
-        if (targetAudience.value === 'all_students') {
-            subjectSelection.style.display = 'none';
-            subjectSelect.required = false;
-            subjectSelect.value = '';
-        } else {
-            subjectSelection.style.display = 'block';
-            subjectSelect.required = true;
-        }
-    }
+                function toggleSubjectSelection() {
+                    if (targetAudience.value === 'all_students') {
+                        subjectSelection.style.display = 'none';
+                        subjectSelect.required = false;
+                        subjectSelect.value = '';
+                    } else {
+                        subjectSelection.style.display = 'block';
+                        subjectSelect.required = true;
+                    }
+                }
 
-    targetAudience.addEventListener('change', toggleSubjectSelection);
-    toggleSubjectSelection(); // Initialize on page load
-});
-</script>
+                targetAudience.addEventListener('change', toggleSubjectSelection);
+                toggleSubjectSelection(); // Initialize on page load
+            });
+        </script>
 
-<?php require_once __DIR__ . '/../admin/footer.php'; ?>
+        <?php require_once __DIR__ . '/../admin/footer.php'; ?>

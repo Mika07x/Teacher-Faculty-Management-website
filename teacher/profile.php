@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '\config\SessionManager.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\config\Database.php';
+require_once __DIR__ . '/../config/SessionManager.php';
+require_once __DIR__ . '/../config/Database.php';
 
 SessionManager::requireLogin();
 if (!SessionManager::isTeacher()) {

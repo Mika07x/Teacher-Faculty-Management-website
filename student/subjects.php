@@ -41,18 +41,18 @@ $current_academic_year = date('Y');
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $subject_id = $_POST['subject_id'] ?? null;
     $action = $_POST['action'] ?? null;
-    
+
     if ($subject_id && $action) {
         if ($action === 'enroll') {
             // Check if already enrolled
             $checkStmt = $conn->prepare("SELECT id FROM student_enrollments WHERE student_user_id = ? AND subject_id = ? AND status = 'enrolled'");
             $checkStmt->bind_param('ii', $student_user_id, $subject_id);
             $checkStmt->execute();
-            
+
             if ($checkStmt->get_result()->num_rows === 0) {
                 $enrollStmt = $conn->prepare("INSERT INTO student_enrollments (student_user_id, subject_id, academic_year, semester) VALUES (?, ?, ?, '1')");
                 $enrollStmt->bind_param('iis', $student_user_id, $subject_id, $current_academic_year);
-                
+
                 if ($enrollStmt->execute()) {
                     $message = 'Successfully enrolled in subject!';
                 } else {
@@ -63,11 +63,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'You are already enrolled in this subject.';
             }
             $checkStmt->close();
-            
+
         } elseif ($action === 'unenroll') {
             $unenrollStmt = $conn->prepare("UPDATE student_enrollments SET status = 'dropped' WHERE student_user_id = ? AND subject_id = ?");
             $unenrollStmt->bind_param('ii', $student_user_id, $subject_id);
-            
+
             if ($unenrollStmt->execute()) {
                 $message = 'Successfully unenrolled from subject!';
             } else {
@@ -141,15 +141,15 @@ $subjects = $stmt->get_result();
                         </div>
                         <div class="card-body d-flex flex-column">
                             <h6 class="card-subtitle mb-2"><?php echo htmlspecialchars($subject['subject_name']); ?></h6>
-                            
+
                             <div class="mb-3">
                                 <small class="text-muted">
-                                    <i class="fas fa-building"></i> 
+                                    <i class="fas fa-building"></i>
                                     <?php echo htmlspecialchars($subject['department'] ?? 'General'); ?>
                                 </small>
                                 <br>
                                 <small class="text-muted">
-                                    <i class="fas fa-credit-card"></i> 
+                                    <i class="fas fa-credit-card"></i>
                                     <?php echo htmlspecialchars($subject['credits']); ?> Credits
                                 </small>
                             </div>
@@ -164,19 +164,19 @@ $subjects = $stmt->get_result();
                                 <label class="fw-bold text-muted small">Assigned Professor:</label>
                                 <?php if (!empty($subject['teachers'])): ?>
                                     <div class="mt-1">
-                                        <?php 
+                                        <?php
                                         $teacherNames = explode(', ', $subject['teachers']);
                                         $teacherIds = explode(',', $subject['teacher_ids']);
-                                        foreach ($teacherNames as $index => $teacherName): 
+                                        foreach ($teacherNames as $index => $teacherName):
                                             if (!empty(trim($teacherName))):
-                                        ?>
-                                            <a href="teacher_profile.php?id=<?php echo trim($teacherIds[$index]); ?>" 
-                                               class="badge bg-success text-white text-decoration-none me-1">
-                                                <i class="fas fa-user"></i> <?php echo htmlspecialchars(trim($teacherName)); ?>
-                                            </a>
-                                        <?php 
+                                                ?>
+                                                <a href="teacher_profile.php?id=<?php echo trim($teacherIds[$index]); ?>"
+                                                    class="badge bg-success text-white text-decoration-none me-1">
+                                                    <i class="fas fa-user"></i> <?php echo htmlspecialchars(trim($teacherName)); ?>
+                                                </a>
+                                            <?php
                                             endif;
-                                        endforeach; 
+                                        endforeach;
                                         ?>
                                     </div>
                                 <?php else: ?>
@@ -191,7 +191,8 @@ $subjects = $stmt->get_result();
                                         <span class="badge bg-success fs-6 px-3 py-2">
                                             <i class="fas fa-check-circle"></i> Enrolled
                                         </span>
-                                        <form method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to unenroll from this subject?');">
+                                        <form method="post" class="d-inline"
+                                            onsubmit="return confirm('Are you sure you want to unenroll from this subject?');">
                                             <input type="hidden" name="subject_id" value="<?php echo $subject['id']; ?>">
                                             <input type="hidden" name="action" value="unenroll">
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -241,13 +242,13 @@ $subjects = $stmt->get_result();
                 WHERE se.student_user_id = ? AND se.status = 'enrolled'
                 GROUP BY s.id
                 ORDER BY se.enrollment_date DESC";
-            
+
             $enrollStmt = $conn->prepare($enrollmentsQuery);
             $enrollStmt->bind_param('i', $student_user_id);
             $enrollStmt->execute();
             $enrollments = $enrollStmt->get_result();
             ?>
-            
+
             <?php if ($enrollments->num_rows > 0): ?>
                 <div class="card">
                     <div class="card-header bg-success text-white">
@@ -269,12 +270,18 @@ $subjects = $stmt->get_result();
                                 <tbody>
                                     <?php while ($enrollment = $enrollments->fetch_assoc()): ?>
                                         <tr>
-                                            <td><strong><?php echo htmlspecialchars($enrollment['subject_code']); ?></strong></td>
+                                            <td><strong><?php echo htmlspecialchars($enrollment['subject_code']); ?></strong>
+                                            </td>
                                             <td><?php echo htmlspecialchars($enrollment['subject_name']); ?></td>
                                             <td><?php echo htmlspecialchars($enrollment['department'] ?? '-'); ?></td>
-                                            <td><span class="badge bg-success text-white"><?php echo $enrollment['credits']; ?></span></td>
-                                            <td><?php echo htmlspecialchars($enrollment['teachers'] ?? 'No teacher assigned'); ?></td>
-                                            <td><small class="text-muted"><?php echo date('M d, Y', strtotime($enrollment['enrollment_date'])); ?></small></td>
+                                            <td><span
+                                                    class="badge bg-success text-white"><?php echo $enrollment['credits']; ?></span>
+                                            </td>
+                                            <td><?php echo htmlspecialchars($enrollment['teachers'] ?? 'No teacher assigned'); ?>
+                                            </td>
+                                            <td><small
+                                                    class="text-muted"><?php echo date('M d, Y', strtotime($enrollment['enrollment_date'])); ?></small>
+                                            </td>
                                         </tr>
                                     <?php endwhile; ?>
                                 </tbody>

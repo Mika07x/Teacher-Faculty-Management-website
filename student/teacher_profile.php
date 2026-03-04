@@ -68,18 +68,20 @@ $todaySchedule = getTeacherScheduleByDay($conn, $id);
                     <!-- Profile Image -->
                     <div class="mb-3">
                         <?php if (!empty($teacher['profile_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/Teacher Faculty Management website/assets/uploads/' . $teacher['profile_image'])): ?>
-                            <img src="../assets/uploads/<?php echo htmlspecialchars($teacher['profile_image']); ?>" 
-                                 class="rounded-circle border" width="120" height="120" alt="Profile" style="object-fit: cover;">
+                            <img src="../assets/uploads/<?php echo htmlspecialchars($teacher['profile_image']); ?>"
+                                class="rounded-circle border" width="120" height="120" alt="Profile"
+                                style="object-fit: cover;">
                         <?php else: ?>
-                            <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center" 
-                                 style="width: 120px; height: 120px; font-size: 36px; font-weight: bold;">
+                            <div class="bg-primary text-white rounded-circle mx-auto d-flex align-items-center justify-content-center"
+                                style="width: 120px; height: 120px; font-size: 36px; font-weight: bold;">
                                 <?php echo strtoupper(substr($teacher['first_name'], 0, 1) . substr($teacher['last_name'], 0, 1)); ?>
                             </div>
                         <?php endif; ?>
                     </div>
-                    
+
                     <!-- Name and Title -->
-                    <h4 class="card-title mb-1"><?php echo htmlspecialchars($teacher['first_name'] . ' ' . $teacher['last_name']); ?></h4>
+                    <h4 class="card-title mb-1">
+                        <?php echo htmlspecialchars($teacher['first_name'] . ' ' . $teacher['last_name']); ?></h4>
                     <p class="text-muted mb-2">Teacher</p>
                     <span class="badge <?php echo getStatusBadgeClass($teacher['status']); ?>">
                         <?php echo ucfirst($teacher['status']); ?>
@@ -100,8 +102,10 @@ $todaySchedule = getTeacherScheduleByDay($conn, $id);
                             <div class="mb-3">
                                 <label class="fw-bold text-muted">Email:</label>
                                 <p class="mb-0">
-                                    <a href="mailto:<?php echo htmlspecialchars($teacher['email']); ?>" class="text-decoration-none">
-                                        <i class="fas fa-envelope"></i> <?php echo htmlspecialchars($teacher['email']); ?>
+                                    <a href="mailto:<?php echo htmlspecialchars($teacher['email']); ?>"
+                                        class="text-decoration-none">
+                                        <i class="fas fa-envelope"></i>
+                                        <?php echo htmlspecialchars($teacher['email']); ?>
                                     </a>
                                 </p>
                             </div>
@@ -110,7 +114,8 @@ $todaySchedule = getTeacherScheduleByDay($conn, $id);
                             <div class="mb-3">
                                 <label class="fw-bold text-muted">Phone:</label>
                                 <p class="mb-0">
-                                    <i class="fas fa-phone"></i> <?php echo htmlspecialchars($teacher['phone'] ?? 'Not provided'); ?>
+                                    <i class="fas fa-phone"></i>
+                                    <?php echo htmlspecialchars($teacher['phone'] ?? 'Not provided'); ?>
                                 </p>
                             </div>
                         </div>
@@ -118,7 +123,8 @@ $todaySchedule = getTeacherScheduleByDay($conn, $id);
                             <div class="mb-3">
                                 <label class="fw-bold text-muted">Department:</label>
                                 <p class="mb-0">
-                                    <i class="fas fa-building"></i> <?php echo htmlspecialchars($teacher['department'] ?? 'Not specified'); ?>
+                                    <i class="fas fa-building"></i>
+                                    <?php echo htmlspecialchars($teacher['department'] ?? 'Not specified'); ?>
                                 </p>
                             </div>
                         </div>
@@ -126,8 +132,8 @@ $todaySchedule = getTeacherScheduleByDay($conn, $id);
                             <div class="mb-3">
                                 <label class="fw-bold text-muted">Current Location:</label>
                                 <p class="mb-0">
-                                    <i class="fas fa-map-marker-alt"></i> 
-                                    <?php 
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <?php
                                     $location = getCurrentTeacherLocation($conn, $id);
                                     if ($location !== '-'): ?>
                                         <span class="badge bg-success"><?php echo htmlspecialchars($location); ?></span>
@@ -164,7 +170,8 @@ $todaySchedule = getTeacherScheduleByDay($conn, $id);
             <!-- Today's Schedule -->
             <div class="card shadow-sm">
                 <div class="card-header">
-                    <h5 class="card-title mb-0"><i class="fas fa-calendar-day"></i> Today's Schedule (<?php echo date('l, M d'); ?>)</h5>
+                    <h5 class="card-title mb-0"><i class="fas fa-calendar-day"></i> Today's Schedule
+                        (<?php echo date('l, M d'); ?>)</h5>
                 </div>
                 <div class="card-body">
                     <?php if ($todaySchedule->num_rows > 0): ?>

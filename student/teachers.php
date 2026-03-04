@@ -19,7 +19,7 @@ $page_title = 'Teacher Directory';
 // AJAX search handler - REUSE existing teacher search functionality
 if (isset($_POST['ajax_search'])) {
     $search = $_POST['search'] ?? '';
-    
+
     // Use existing Teacher class search method
     if ($search) {
         $result = $teacherObj->search($search);
@@ -38,7 +38,8 @@ if (isset($_POST['ajax_search'])) {
                 <td><?php echo htmlspecialchars($r['email']); ?></td>
                 <td><?php echo htmlspecialchars($r['phone'] ?? '-'); ?></td>
                 <td><?php echo htmlspecialchars($r['department'] ?? '-'); ?></td>
-                <td><?php echo $loc !== '-' ? '<span class="badge bg-info text-dark">'.htmlspecialchars($loc).'</span>' : '<span class="text-muted">-</span>'; ?></td>
+                <td><?php echo $loc !== '-' ? '<span class="badge bg-info text-dark">' . htmlspecialchars($loc) . '</span>' : '<span class="text-muted">-</span>'; ?>
+                </td>
                 <td><a href="teacher_profile.php?id=<?php echo $r['id']; ?>" class="btn btn-sm btn-primary">View</a></td>
             </tr>
             <?php
@@ -64,7 +65,8 @@ require_once __DIR__ . '/header.php';
         <div class="card-body">
             <div class="row g-2">
                 <div class="col-md-6">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name, department, or subject...">
+                    <input type="text" id="searchInput" class="form-control"
+                        placeholder="Search by name, department, or subject...">
                 </div>
                 <div class="col-md-2">
                     <button id="searchBtn" class="btn btn-primary">Search</button>
@@ -98,28 +100,28 @@ require_once __DIR__ . '/header.php';
 <?php require_once __DIR__ . '/../admin/footer.php'; ?>
 
 <script>
-document.addEventListener('DOMContentLoaded', function(){
-    const input = document.getElementById('searchInput');
-    const btn = document.getElementById('searchBtn');
-    const body = document.getElementById('resultsBody');
-    let t;
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('searchInput');
+        const btn = document.getElementById('searchBtn');
+        const body = document.getElementById('resultsBody');
+        let t;
 
-    function doSearch(){
-        const val = input.value.trim();
-        const fd = new FormData();
-        fd.append('ajax_search', '1');
-        fd.append('search', val);
+        function doSearch() {
+            const val = input.value.trim();
+            const fd = new FormData();
+            fd.append('ajax_search', '1');
+            fd.append('search', val);
 
-        fetch('teachers.php', { method: 'POST', body: fd })
-            .then(r => r.text())
-            .then(html => { body.innerHTML = html; })
-            .catch(e => console.error(e));
-    }
+            fetch('teachers.php', { method: 'POST', body: fd })
+                .then(r => r.text())
+                .then(html => { body.innerHTML = html; })
+                .catch(e => console.error(e));
+        }
 
-    input.addEventListener('input', function(){ clearTimeout(t); t = setTimeout(doSearch, 250); });
-    btn.addEventListener('click', doSearch);
+        input.addEventListener('input', function () { clearTimeout(t); t = setTimeout(doSearch, 250); });
+        btn.addEventListener('click', doSearch);
 
-    // initial load
-    doSearch();
-});
+        // initial load
+        doSearch();
+    });
 </script>

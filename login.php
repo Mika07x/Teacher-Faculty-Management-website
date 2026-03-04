@@ -1,8 +1,8 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '\config\SessionManager.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\config\Database.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\classes\Teacher.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '\classes\User.php';
+require_once __DIR__ . '/config/SessionManager.php';
+require_once __DIR__ . '/config/Database.php';
+require_once __DIR__ . '/classes/Teacher.php';
+require_once __DIR__ . '/classes/User.php';
 
 $error = '';
 $success = '';

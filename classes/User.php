@@ -1,6 +1,7 @@
 <?php
 
-class User {
+class User
+{
     private $conn;
     private $table = 'users';
 
@@ -11,15 +12,17 @@ class User {
     public $role;
     public $status;
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
     // Login user
-    public function login($username, $password) {
+    public function login($username, $password)
+    {
         $query = "SELECT id, username, email, password, role, status FROM " . $this->table . " WHERE username = ? OR email = ?";
         $stmt = $this->conn->prepare($query);
-        
+
         if (!$stmt) {
             return false;
         }
@@ -43,7 +46,8 @@ class User {
     }
 
     // Register user
-    public function register($username, $email, $password, $role = 'teacher') {
+    public function register($username, $email, $password, $role = 'teacher')
+    {
         $query = "INSERT INTO " . $this->table . " (username, email, password, role) VALUES (?, ?, ?, ?)";
         $stmt = $this->conn->prepare($query);
 
@@ -61,7 +65,8 @@ class User {
     }
 
     // Get user by ID
-    public function getUserById($id) {
+    public function getUserById($id)
+    {
         $query = "SELECT * FROM " . $this->table . " WHERE id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $id);
@@ -70,7 +75,8 @@ class User {
     }
 
     // Update user
-    public function updateUser($id, $email, $role = null) {
+    public function updateUser($id, $email, $role = null)
+    {
         if ($role) {
             $query = "UPDATE " . $this->table . " SET email = ?, role = ? WHERE id = ?";
             $stmt = $this->conn->prepare($query);
@@ -84,7 +90,8 @@ class User {
     }
 
     // Delete user
-    public function deleteUser($id) {
+    public function deleteUser($id)
+    {
         $query = "DELETE FROM " . $this->table . " WHERE id = ?";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("i", $id);

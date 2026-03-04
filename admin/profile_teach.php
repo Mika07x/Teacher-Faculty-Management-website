@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute();
                 $user_result = $stmt->get_result();
                 $user = $user_result->fetch_assoc();
-                
+
                 // Refresh teacher data
                 $stmt2 = $conn->prepare("SELECT id, first_name, last_name, phone, department FROM teachers WHERE user_id = ?");
                 $stmt2->bind_param('i', $user_id);
@@ -117,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -125,6 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="../assets/css/style.css" rel="stylesheet">
 </head>
+
 <body>
     <?php require_once __DIR__ . '/../includes/sidebar.php'; ?>
 
@@ -135,7 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a class="navbar-brand" href="dashboard.php">TFMS Admin</a>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <span class="nav-link">Welcome, <?php echo htmlspecialchars(SessionManager::getUsername()); ?></span>
+                        <span class="nav-link">Welcome,
+                            <?php echo htmlspecialchars(SessionManager::getUsername()); ?></span>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="logout.php">Logout</a>
@@ -162,7 +165,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="mb-3">
                                     <label class="form-label">Profile Image</label>
                                     <div class="mb-2">
-                                        <img src="<?php echo htmlspecialchars('../assets/uploads/' . ($user['profile_image'] ?: 'default.png')); ?>" alt="Profile" style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+                                        <img src="<?php echo htmlspecialchars('../assets/uploads/' . ($user['profile_image'] ?: 'default.png')); ?>"
+                                            alt="Profile"
+                                            style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
                                     </div>
                                     <input type="file" name="profile_image" class="form-control" accept="image/*">
                                     <small class="text-muted">Accepted formats: JPG, PNG, GIF (Max 5MB)</small>
@@ -172,11 +177,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">First Name</label>
-                                        <input type="text" name="first_name" class="form-control" value="<?php echo htmlspecialchars($teacher['first_name'] ?? ''); ?>" required>
+                                        <input type="text" name="first_name" class="form-control"
+                                            value="<?php echo htmlspecialchars($teacher['first_name'] ?? ''); ?>"
+                                            required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Last Name</label>
-                                        <input type="text" name="last_name" class="form-control" value="<?php echo htmlspecialchars($teacher['last_name'] ?? ''); ?>" required>
+                                        <input type="text" name="last_name" class="form-control"
+                                            value="<?php echo htmlspecialchars($teacher['last_name'] ?? ''); ?>"
+                                            required>
                                     </div>
                                 </div>
 
@@ -184,24 +193,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Email</label>
-                                        <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                                        <input type="email" name="email" class="form-control"
+                                            value="<?php echo htmlspecialchars($user['email']); ?>" required>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Phone</label>
-                                        <input type="tel" name="phone" class="form-control" value="<?php echo htmlspecialchars($teacher['phone'] ?? ''); ?>">
+                                        <input type="tel" name="phone" class="form-control"
+                                            value="<?php echo htmlspecialchars($teacher['phone'] ?? ''); ?>">
                                     </div>
                                 </div>
 
                                 <!-- Department -->
                                 <div class="mb-3">
                                     <label class="form-label">Department</label>
-                                    <input type="text" name="department" class="form-control" value="<?php echo htmlspecialchars($teacher['department'] ?? ''); ?>">
+                                    <input type="text" name="department" class="form-control"
+                                        value="<?php echo htmlspecialchars($teacher['department'] ?? ''); ?>">
                                 </div>
 
                                 <!-- Username (read-only) -->
                                 <div class="mb-3">
                                     <label class="form-label">Username</label>
-                                    <input type="text" class="form-control" value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
+                                    <input type="text" class="form-control"
+                                        value="<?php echo htmlspecialchars($user['username']); ?>" disabled>
                                 </div>
 
                                 <!-- Password -->
@@ -222,4 +235,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

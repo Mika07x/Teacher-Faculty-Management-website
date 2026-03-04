@@ -1,5 +1,5 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '\config\SessionManager.php';
+require_once __DIR__ . '/../config/SessionManager.php';
 
 SessionManager::startTeacherSession();
 SessionManager::logout();

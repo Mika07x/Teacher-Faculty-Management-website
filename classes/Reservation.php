@@ -1,19 +1,23 @@
 <?php
 
-class Reservation {
+class Reservation
+{
     private $conn;
     private $table = 'room_reservations';
 
-    public function __construct($db) {
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
     // Check if a room is available on a given date/time slot (no approved reservation and no schedule clash)
-    public function isRoomAvailable($classroom_id, $reservation_date, $time_slot_id) {
+    public function isRoomAvailable($classroom_id, $reservation_date, $time_slot_id)
+    {
         // Check approved or pending reservations
         $query = "SELECT COUNT(*) as cnt FROM room_reservations WHERE classroom_id = ? AND reservation_date = ? AND time_slot_id = ? AND status IN ('approved','pending')";
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) return false;
+        if (!$stmt)
+            return false;
         $stmt->bind_param('isi', $classroom_id, $reservation_date, $time_slot_id);
         $stmt->execute();
         $res = $stmt->get_result()->fetch_assoc();
@@ -25,7 +29,8 @@ class Reservation {
         $dayOfWeek = date('l', strtotime($reservation_date));
         $query2 = "SELECT COUNT(*) as cnt FROM schedules s WHERE s.classroom_id = ? AND s.day_of_week = ? AND s.time_slot_id = ? AND s.status = 'active'";
         $stmt2 = $this->conn->prepare($query2);
-        if (!$stmt2) return false;
+        if (!$stmt2)
+            return false;
         $stmt2->bind_param('isi', $classroom_id, $dayOfWeek, $time_slot_id);
         $stmt2->execute();
         $res2 = $stmt2->get_result()->fetch_assoc();
@@ -37,7 +42,8 @@ class Reservation {
     }
 
     // Create a reservation (initially pending)
-    public function createReservation($teacher_id, $classroom_id, $reservation_date, $time_slot_id, $notes = '') {
+    public function createReservation($teacher_id, $classroom_id, $reservation_date, $time_slot_id, $notes = '')
+    {
         // Validate availability
         if (!$this->isRoomAvailable($classroom_id, $reservation_date, $time_slot_id)) {
             return ['success' => false, 'message' => 'Room is not available for the selected date/time.'];
@@ -45,7 +51,8 @@ class Reservation {
 
         $query = "INSERT INTO " . $this->table . " (teacher_id, classroom_id, reservation_date, time_slot_id, notes) VALUES (?, ?, ?, ?, ?)";
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) return ['success' => false, 'message' => 'Database error: ' . $this->conn->error];
+        if (!$stmt)
+            return ['success' => false, 'message' => 'Database error: ' . $this->conn->error];
         $stmt->bind_param('iisis', $teacher_id, $classroom_id, $reservation_date, $time_slot_id, $notes);
         if ($stmt->execute()) {
             return ['success' => true, 'message' => 'Reservation request created and is pending approval.'];
@@ -54,20 +61,23 @@ class Reservation {
     }
 
     // Get reservations for a teacher
-    public function getReservationsByTeacher($teacher_id) {
+    public function getReservationsByTeacher($teacher_id)
+    {
         $query = "SELECT rr.*, c.room_number, c.room_name, ts.slot_name FROM " . $this->table . " rr
                   LEFT JOIN classrooms c ON rr.classroom_id = c.id
                   LEFT JOIN time_slots ts ON rr.time_slot_id = ts.id
                   WHERE rr.teacher_id = ? ORDER BY rr.reservation_date DESC, ts.start_time";
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) return false;
+        if (!$stmt)
+            return false;
         $stmt->bind_param('i', $teacher_id);
         $stmt->execute();
         return $stmt->get_result();
     }
 
     // Get all reservations (for admin)
-    public function getAllReservations($status = null) {
+    public function getAllReservations($status = null)
+    {
         $query = "SELECT rr.*, c.room_number, c.room_name, ts.slot_name, t.id as teacher_id, t.first_name, t.last_name, u.username, u.email
                   FROM " . $this->table . " rr
                   LEFT JOIN classrooms c ON rr.classroom_id = c.id
@@ -89,14 +99,17 @@ class Reservation {
     }
 
     // Approve a reservation (admin)
-    public function approveReservation($id) {
+    public function approveReservation($id)
+    {
         // Fetch reservation
         $stmt = $this->conn->prepare("SELECT classroom_id, reservation_date, time_slot_id FROM " . $this->table . " WHERE id = ?");
-        if (!$stmt) return ['success' => false, 'message' => 'Reservation not found'];
+        if (!$stmt)
+            return ['success' => false, 'message' => 'Reservation not found'];
         $stmt->bind_param('i', $id);
         $stmt->execute();
         $res = $stmt->get_result();
-        if ($res->num_rows === 0) return ['success' => false, 'message' => 'Reservation not found'];
+        if ($res->num_rows === 0)
+            return ['success' => false, 'message' => 'Reservation not found'];
         $row = $res->fetch_assoc();
 
         // Check if already has an approved reservation
@@ -130,9 +143,11 @@ class Reservation {
     }
 
     // Reject a reservation (admin)
-    public function rejectReservation($id, $reason = '') {
+    public function rejectReservation($id, $reason = '')
+    {
         $u = $this->conn->prepare("UPDATE " . $this->table . " SET status = 'rejected', notes = CONCAT(IFNULL(notes,''), '\n[Admin reason]: ', ?) , updated_at = CURRENT_TIMESTAMP WHERE id = ?");
-        if (!$u) return ['success' => false, 'message' => 'Database error'];
+        if (!$u)
+            return ['success' => false, 'message' => 'Database error'];
         $u->bind_param('si', $reason, $id);
         if ($u->execute()) {
             return ['success' => true, 'message' => 'Reservation rejected'];
